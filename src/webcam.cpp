@@ -10,6 +10,7 @@
 #include "opencv2/objdetect/objdetect.hpp"
 
 #include "config.hpp"
+#include "kalman.hpp"
 
 int main() {
     std::string fn_haar = HAARCASCADES_PATH;
