@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "opencv2/core/core.hpp"
+#include "opencv2/features2d.hpp"
 #include "opencv2/face/facerec.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -34,6 +35,7 @@ int main() {
         cvtColor(original, gray, CV_BGR2GRAY);
         std::vector<cv::Rect_<int>> faces;
         haar_cascade.detectMultiScale(gray, faces);
+
         for(unsigned int i = 0; i < faces.size(); i++) {
             cv::Rect face_i = faces[i];
             cv::Mat face = gray(face_i);
@@ -43,7 +45,20 @@ int main() {
             int pos_y = std::max(face_i.tl().y - 10, 0);
             std::string box_text = cv::format("Face");
             cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0);
+
+            cv::SimpleBlobDetector::Params params;
+            params.minThreshold = 10;
+            params.maxThreshold = 800;
+
+            cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
+            std::vector<cv::KeyPoint> keypoints;
+            detector->detect(face, keypoints);
+
+            cv::Mat im_with_keypoints;
+            cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0,0,255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+            cv::imshow("keypoints", im_with_keypoints);
         }
+
         cv::imshow("face_recognizer", original);
         if(cv::waitKey(30) >= 0) {
             break;
