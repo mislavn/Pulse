@@ -12,6 +12,12 @@ public:
     }
 
     void update(linalg::vec<T, M> x0) {
+        xH_next = A * xH;
+        P = A * P * linalg::transpose(A) + Q;
+        K = P * linalg::transpose(B) * linalg::inverse(B * P * linalg::transpose(B) + R);
+        xH_next += K * (x0 - B * xH_next);
+        P = (I - K * B) * P;
+        xH = xH_next;
     }
 
 private:

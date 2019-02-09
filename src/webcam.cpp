@@ -11,7 +11,6 @@
 #include <opencv2/objdetect/objdetect.hpp>
 
 #include "config.hpp"
-#include "kalman.hpp"
 
 int main() {
     std::string fn_haar = HAARCASCADES_PATH;
@@ -47,8 +46,6 @@ int main() {
             cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0);
 
             cv::SimpleBlobDetector::Params params;
-            params.minThreshold = 10;
-            params.maxThreshold = 800;
 
             cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
             std::vector<cv::KeyPoint> keypoints;
@@ -59,7 +56,7 @@ int main() {
             cv::imshow("keypoints", im_with_keypoints);
         }
 
-        cv::imshow("face_recognizer", original);
+        //cv::imshow("face_recognizer", original);
         if(cv::waitKey(30) >= 0) {
             break;
         }
