@@ -51,12 +51,9 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
                            # bitwise were probably wanted
               -Wuseless-cast # warn if you perform a cast to the same type
     )
-    target_link_libraries(project_options INTERFACE stdc++fs)
-else()
-    target_link_libraries(project_options INTERFACE stdc++fs)
 endif()
 
-option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" FALSE)
+option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" TRUE)
 option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
 
 if(ENABLE_CPPCHECK)
@@ -77,6 +74,16 @@ if(ENABLE_CLANG_TIDY)
     endif()
 endif()
 
+
+# Download automatically, you can also just copy the conan.cmake file
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.13/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+endif()
+
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP CONAN_COMMAND ${CONAN_CMD} CMAKE_TARGETS BUILD missing)
+
 set(SOURCES
 	src/webcam.cpp)
 
@@ -87,5 +94,5 @@ set(HAARCASCADES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/haarcascades/haarcascade_fron
 configure_file("${PROJECT_SOURCE_DIR}/config/config.hpp.in" "${PROJECT_SOURCE_DIR}/src/config.hpp" ESCAPE_QUOTES @ONLY)
 
 # dependencies - OpenCV
-find_package(OpenCV REQUIRED)
-target_link_libraries(${CMAKE_PROJECT_NAME} opencv_face opencv_core)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE CONAN_PKG::opencv)
+include_directories(${CONAN_INCLUDE_DIRS_OPENCV})

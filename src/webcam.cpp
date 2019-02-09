@@ -2,13 +2,13 @@
 #include <fstream>
 #include <sstream>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/features2d.hpp"
-#include "opencv2/face/facerec.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/types_c.h"
-#include "opencv2/objdetect/objdetect.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc/types_c.h>
+#include <opencv2/objdetect/objdetect.hpp>
 
 #include "config.hpp"
 #include "kalman.hpp"
