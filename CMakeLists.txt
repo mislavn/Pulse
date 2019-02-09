@@ -54,7 +54,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" TRUE)
-option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
+option(ENABLE_CPPCHECK "Enable testing with cppcheck" TRUE)
 
 if(ENABLE_CPPCHECK)
     find_program(CPPCHECK cppcheck)
