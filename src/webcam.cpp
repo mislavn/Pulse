@@ -20,7 +20,7 @@ int main() {
     cv::VideoCapture cap(0);
 
     if(!cap.isOpened()) {
-        std::cerr << "Capture Device ID 0 cannot be opened." << '\n';
+        std::cerr << "Capture Device ID 0 cannot be opened.\n";
         return -1;
     }
 
@@ -50,10 +50,10 @@ int main() {
 
             cv::Mat im_with_keypoints;
             cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0,0,255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-            cv::imshow("keypoints", im_with_keypoints);
+            //cv::imshow("keypoints", im_with_keypoints);
         }
 
-        //cv::imshow("face_recognizer", original);
+        cv::imshow("face_recognizer", original);
         if(cv::waitKey(30) >= 0) {
             break;
         }
