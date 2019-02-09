@@ -1,6 +1,4 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/core.hpp>
@@ -35,15 +33,14 @@ int main() {
         std::vector<cv::Rect_<int>> faces;
         haar_cascade.detectMultiScale(gray, faces);
 
-        for(unsigned int i = 0; i < faces.size(); i++) {
-            cv::Rect face_i = faces[i];
+        for (const auto &face_i: faces) {
             cv::Mat face = gray(face_i);
             cv::Mat face_resized;
             rectangle(original, face_i, CV_RGB(0, 255,0), 1);
             int pos_x = std::max(face_i.tl().x - 10, 0);
             int pos_y = std::max(face_i.tl().y - 10, 0);
-            std::string box_text = cv::format("Face");
-            cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0);
+            std::string box_text = "Face";
+            cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2);
 
             cv::SimpleBlobDetector::Params params;
 
