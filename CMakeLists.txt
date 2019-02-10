@@ -14,6 +14,10 @@ add_library(project_options INTERFACE)
 
 target_compile_features(project_options INTERFACE cxx_std_17)
 
+#TODO add static compile
+#SET(BUILD_SHARED_LIBS OFF)
+#SET(CMAKE_EXE_LINKER_FLAGS "-static")
+
 target_compile_options(project_warnings
 INTERFACE -Wall
           -Werror # treat all warnings as errors

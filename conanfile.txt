@@ -5,4 +5,5 @@ opencv/4.0.1@conan/stable
 cmake
 
 [options]
-opencv:shared=True
+opencv:shared=False
+*:shared=False
