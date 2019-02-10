@@ -1,6 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 PROJECT(Pulse VERSION 0.0.1 LANGUAGES CXX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
 find_program(CCACHE ccache)
 if(CCACHE)
@@ -14,7 +13,6 @@ add_library(project_warnings INTERFACE)
 add_library(project_options INTERFACE)
 
 target_compile_features(project_options INTERFACE cxx_std_17)
-target_include_directories(project_options INTERFACE include external)
 
 target_compile_options(project_warnings
 INTERFACE -Wall
@@ -39,20 +37,6 @@ INTERFACE -Wall
                      # output (ie printf)
 )
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(project_warnings
-    INTERFACE -Wmisleading-indentation # warn if identation implies blocks
-                                     # where blocks do not exist
-              -Wduplicated-cond # warn if if / else chain has duplicated
-                                # conditions
-              -Wduplicated-branches # warn if if / else branches have
-                                    # duplicated code
-              -Wlogical-op # warn about logical operations being used where
-                           # bitwise were probably wanted
-              -Wuseless-cast # warn if you perform a cast to the same type
-    )
-endif()
-
 option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" TRUE)
 option(ENABLE_CPPCHECK "Enable testing with cppcheck" TRUE)
 
@@ -74,7 +58,6 @@ if(ENABLE_CLANG_TIDY)
     endif()
 endif()
 
-
 # Download automatically, you can also just copy the conan.cmake file
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
@@ -82,6 +65,7 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
+conan_check(REQUIRED)
 conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP CONAN_COMMAND ${CONAN_CMD} CMAKE_TARGETS BUILD missing)
 
 set(SOURCES
@@ -94,5 +78,4 @@ set(HAARCASCADES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/haarcascades/haarcascade_fron
 configure_file("${PROJECT_SOURCE_DIR}/config/config.hpp.in" "${PROJECT_SOURCE_DIR}/src/config.hpp" ESCAPE_QUOTES @ONLY)
 
 # dependencies - OpenCV
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE CONAN_PKG::opencv)
-include_directories(${CONAN_INCLUDE_DIRS_OPENCV})
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE project_options project_warnings CONAN_PKG::opencv)
