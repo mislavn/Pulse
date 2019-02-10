@@ -10,7 +10,8 @@
 
 #include "config.hpp"
 
-int main() {
+int main()
+{
     std::string fn_haar = HAARCASCADES_PATH;
     std::vector<cv::Mat> images;
     std::vector<int> labels;
@@ -19,13 +20,13 @@ int main() {
 
     cv::VideoCapture cap(0);
 
-    if(!cap.isOpened()) {
+    if (!cap.isOpened()) {
         std::cerr << "Capture Device ID 0 cannot be opened.\n";
         return -1;
     }
 
     cv::Mat frame;
-    while(true) {
+    while (true) {
         cap >> frame;
         cv::Mat original = frame.clone();
         cv::Mat gray;
@@ -34,19 +35,17 @@ int main() {
         haar_cascade.detectMultiScale(gray, faces);
 
         /* show only the biggest face in the vector of detected faces */
-        const auto &face_i = std::max_element(std::begin(faces), std::end(faces),
-                             [](const cv::Rect_<int> &a, const cv::Rect_<int> &b){ return a.area() < b.area();});
-        if (face_i == std::end(faces)) {
-            continue;
-        }
+        const auto &face_i = std::max_element(
+            std::begin(faces), std::end(faces), [](const cv::Rect_<int> &a, const cv::Rect_<int> &b) { return a.area() < b.area(); });
+        if (face_i == std::end(faces)) { continue; }
 
         cv::Mat face = gray(*face_i);
         cv::Mat face_resized;
-        rectangle(original, *face_i, CV_RGB(0, 255,0), 1);
-        int pos_x = std::max(face_i->tl().x - 10, 0);
-        int pos_y = std::max(face_i->tl().y - 10, 0);
+        rectangle(original, *face_i, CV_RGB(0, 255, 0), 1);
+        int pos_x            = std::max(face_i->tl().x - 10, 0);
+        int pos_y            = std::max(face_i->tl().y - 10, 0);
         std::string box_text = "Face";
-        cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2);
+        cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::SimpleBlobDetector::Params params;
 
@@ -55,13 +54,11 @@ int main() {
         detector->detect(face, keypoints);
 
         cv::Mat im_with_keypoints;
-        cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0,0,255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-        //cv::imshow("keypoints", im_with_keypoints);
+        cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        // cv::imshow("keypoints", im_with_keypoints);
 
         cv::imshow("face_recognizer", original);
-        if(cv::waitKey(30) >= 0) {
-            break;
-        }
+        if (cv::waitKey(30) >= 0) { break; }
     }
     return 0;
 }
