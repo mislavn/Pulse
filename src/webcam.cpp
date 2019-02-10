@@ -40,6 +40,7 @@ int main()
         if (face_i == std::end(faces)) { continue; }
 
         cv::Mat face = gray(*face_i);
+        cv::Mat faceMat(original, *face_i);
         cv::Mat face_resized;
         rectangle(original, *face_i, CV_RGB(0, 255, 0), 1);
         int pos_x            = std::max(face_i->tl().x - 10, 0);
@@ -48,15 +49,21 @@ int main()
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::SimpleBlobDetector::Params params;
+        params.filterByArea  = true;
+        params.minArea       = 400;
+        params.maxArea       = 100000;
+        params.filterByColor = true;
+        params.blobColor     = 255;
 
         cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
         std::vector<cv::KeyPoint> keypoints;
-        detector->detect(face, keypoints);
+        detector->detect(faceMat, keypoints);
 
         cv::Mat im_with_keypoints;
         cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-        // cv::imshow("keypoints", im_with_keypoints);
+        //cv::imshow("keypoints", im_with_keypoints);
 
+        //TODO perform kalman on the red pixels in the deteced blob
         cv::imshow("face_recognizer", original);
         if (cv::waitKey(30) >= 0) { break; }
     }
