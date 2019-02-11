@@ -1,4 +1,5 @@
 #include <iostream>
+#include <numeric>
 #include <vector>
 
 #include <opencv2/core/core.hpp>
@@ -29,7 +30,7 @@ int main()
     cv::Mat frame;
     while (true) {
         cap >> frame;
-        cv::Mat original = frame.clone();
+        const cv::Mat original = frame.clone();
         cv::Mat gray;
         cvtColor(original, gray, CV_BGR2GRAY);
         std::vector<cv::Rect_<int>> faces;
@@ -59,14 +60,11 @@ int main()
         detector->detect(faceMat, keypoints);
 
         if (keypoints.empty()) { continue; }
-        unsigned int red = 0;
-        for (const auto &kp : keypoints) {
-            cv::Vec3b color = original.at<cv::Vec3b>(kp.pt);
-            red += color[2];
-        }
+        const auto sum_red = std::accumulate(keypoints.begin(), keypoints.end(), 0, [&original](unsigned int prev, cv::KeyPoint kp) {
+            return prev + original.at<cv::Vec3b>(kp.pt)[2];
+        });
 
-        int av_red = static_cast<int>(static_cast<float>(red) / static_cast<float>(keypoints.size()));
-        std::cout << av_red << '\n';
+        int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(keypoints.size()));
 
         std::string box_text = std::string("Face pulse ") + std::to_string(av_red);
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
