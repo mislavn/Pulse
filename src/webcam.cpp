@@ -41,12 +41,12 @@ int main()
             std::begin(faces), std::end(faces), [](const cv::Rect_<int> &a, const cv::Rect_<int> &b) { return a.area() < b.area(); });
         if (face_i == std::end(faces)) { continue; }
 
-        cv::Mat face = gray(*face_i);
-        cv::Mat faceMat(original, *face_i);
-        cv::Mat face_resized;
+        const cv::Mat face = gray(*face_i);
+        const cv::Mat faceMat(original, *face_i);
+        const cv::Mat face_resized;
         rectangle(original, *face_i, CV_RGB(0, 255, 0), 1);
-        int pos_x = std::max(face_i->tl().x - 10, 0);
-        int pos_y = std::max(face_i->tl().y - 10, 0);
+        const int pos_x = std::max(face_i->tl().x - 10, 0);
+        const int pos_y = std::max(face_i->tl().y - 10, 0);
 
         cv::SimpleBlobDetector::Params params;
         params.filterByArea  = true;
@@ -66,7 +66,7 @@ int main()
 
         int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(keypoints.size()));
 
-        std::string box_text = std::string("Face pulse ") + std::to_string(av_red);
+        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red);
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::Mat im_with_keypoints;
