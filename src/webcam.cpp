@@ -14,9 +14,7 @@
 
 int main()
 {
-    std::string fn_haar = HAARCASCADES_PATH;
-    std::vector<cv::Mat> images;
-    std::vector<int> labels;
+    const std::string fn_haar = HAARCASCADES_PATH;
     cv::CascadeClassifier haar_cascade;
     haar_cascade.load(fn_haar);
 
