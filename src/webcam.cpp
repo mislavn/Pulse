@@ -66,7 +66,7 @@ int main()
 
         int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(keypoints.size()));
 
-        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red);
+        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(keypoints.size());
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::Mat im_with_keypoints;
