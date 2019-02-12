@@ -25,7 +25,7 @@ int main()
         return -1;
     }
 
-    cv::Mat frame;
+    cv::Mat frame, frame_HSV, frame_threshold;
     while (true) {
         cap >> frame;
         const cv::Mat original = frame.clone();
@@ -46,6 +46,11 @@ int main()
         const int pos_x = std::max(face_i->tl().x - 10, 0);
         const int pos_y = std::max(face_i->tl().y - 10, 0);
 
+        // Convert from BGR to HSV colorspace
+        cvtColor(faceMat, frame_HSV, cv::COLOR_BGR2HSV, 3);
+        // Detect the object based on HSV Range Values
+        inRange(frame_HSV, cv::Scalar(0, 100, 30), cv::Scalar(5, 255, 255), frame_threshold);
+
         cv::SimpleBlobDetector::Params params;
         params.filterByArea  = true;
         params.minArea       = 400;
@@ -64,13 +69,15 @@ int main()
 
         int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(keypoints.size()));
 
-        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(keypoints.size());
+        const std::string box_text =
+            std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(keypoints.size());
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::Mat im_with_keypoints;
         cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
         cv::imshow("face_recognizer", original);
+        cv::imshow("test2", frame_threshold);
         if (cv::waitKey(30) >= 0) { break; }
     }
     return 0;
