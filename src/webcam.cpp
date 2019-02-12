@@ -56,14 +56,12 @@ int main()
         int size_red = std::accumulate(face_threshold.begin<cv::Vec3b>(), face_threshold.end<cv::Vec3b>(), 0, [](unsigned int prev, cv::Vec3b kp) {
             return (kp[0] > 0) ? prev + 1 : prev;
         });
-        int sum_red = std::accumulate(face_masked.begin<cv::Vec3b>(), face_masked.end<cv::Vec3b>(), 0, [](unsigned int prev, cv::Vec3b kp) {
-            return prev + kp[2];
-        });
+        int sum_red  = std::accumulate(
+            face_masked.begin<cv::Vec3b>(), face_masked.end<cv::Vec3b>(), 0, [](unsigned int prev, cv::Vec3b kp) { return prev + kp[2]; });
 
         int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(size_red));
 
-        const std::string box_text =
-            std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(size_red);
+        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(size_red);
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
         cv::imshow("test2", original);
