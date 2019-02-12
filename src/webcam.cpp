@@ -25,7 +25,7 @@ int main()
         return -1;
     }
 
-    cv::Mat frame, frame_HSV, frame_threshold;
+    cv::Mat frame, face_HSV, face_threshold;
     while (true) {
         cap >> frame;
         const cv::Mat original = frame.clone();
@@ -47,37 +47,25 @@ int main()
         const int pos_y = std::max(face_i->tl().y - 10, 0);
 
         // Convert from BGR to HSV colorspace
-        cvtColor(faceMat, frame_HSV, cv::COLOR_BGR2HSV, 3);
+        cvtColor(faceMat, face_HSV, cv::COLOR_BGR2HSV, 3);
         // Detect the object based on HSV Range Values
-        inRange(frame_HSV, cv::Scalar(0, 100, 30), cv::Scalar(5, 255, 255), frame_threshold);
+        inRange(face_HSV, cv::Scalar(0, 100, 30), cv::Scalar(5, 255, 255), face_threshold);
+        cv::Mat face_masked;
+        cv::copyTo(faceMat, face_masked, face_threshold);
 
-        cv::SimpleBlobDetector::Params params;
-        params.filterByArea  = true;
-        params.minArea       = 400;
-        params.maxArea       = 100000;
-        params.filterByColor = true;
-        params.blobColor     = 255;
+        //if (keypoints.empty()) { continue; }
+        //const auto sum_red = std::accumulate(keypoints.begin(), keypoints.end(), 0, [&original](unsigned int prev, cv::KeyPoint kp) {
+        //    return prev + original.at<cv::Vec3b>(kp.pt)[2];
+        //});
 
-        cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
-        std::vector<cv::KeyPoint> keypoints;
-        detector->detect(faceMat, keypoints);
-
-        if (keypoints.empty()) { continue; }
-        const auto sum_red = std::accumulate(keypoints.begin(), keypoints.end(), 0, [&original](unsigned int prev, cv::KeyPoint kp) {
-            return prev + original.at<cv::Vec3b>(kp.pt)[2];
-        });
-
-        int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(keypoints.size()));
+        int sum_red = 1;
+        int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(1));
 
         const std::string box_text =
-            std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(keypoints.size());
+            std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix TODO");
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
 
-        cv::Mat im_with_keypoints;
-        cv::drawKeypoints(face, keypoints, im_with_keypoints, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-
-        cv::imshow("face_recognizer", original);
-        cv::imshow("test2", frame_threshold);
+        cv::imshow("test2", face_masked);
         if (cv::waitKey(30) >= 0) { break; }
     }
     return 0;
