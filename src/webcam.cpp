@@ -17,6 +17,7 @@ int main()
     const std::string fn_haar = HAARCASCADES_PATH;
     cv::CascadeClassifier haar_cascade;
     haar_cascade.load(fn_haar);
+    float prev_av_red = -1;
 
     cv::VideoCapture cap(0);
 
@@ -59,10 +60,15 @@ int main()
         int sum_red  = std::accumulate(
             face_masked.begin<cv::Vec3b>(), face_masked.end<cv::Vec3b>(), 0, [](unsigned int prev, cv::Vec3b kp) { return prev + kp[2]; });
 
-        int av_red = static_cast<int>(static_cast<float>(sum_red) / static_cast<float>(size_red));
+        float av_red = static_cast<float>(sum_red) / static_cast<float>(size_red);
 
-        const std::string box_text = std::string("Face pulse ") + std::to_string(av_red) + std::string(" num of pix ") + std::to_string(size_red);
+        if (prev_av_red == -1) {
+            prev_av_red = av_red;
+            continue;
+        }
+        const std::string box_text = std::string("Red pixel change ") + std::to_string(av_red - prev_av_red) + std::string(" on ") + std::to_string(size_red) + std::string(" pixels.");
         cv::putText(original, box_text, cv::Point(pos_x, pos_y), cv::FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0, 255, 0), 2);
+        prev_av_red = av_red;
 
         cv::imshow("test2", original);
         if (cv::waitKey(30) >= 0) { break; }
